@@ -5,10 +5,22 @@ FROM rocker/r-devel-ubsan-clang:latest
 
 MAINTAINER "Mario Annau" mario.annau@gmail.com
 
-RUN apt-get update -qq \
-	&& apt-get install -t unstable -y --no-install-recommends \
-		libhdf5-dev \
-    libxml2-dev
+ENV CC="clang-4.0 -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer"
+ENV LD_LIBRARY_PATH=/usr/local/lib
+ENV ASAN_OPTIONS=detect_leaks=0
 
-RUN ASAN_OPTIONS=detect_leaks=0 \
-    Rdevel -e "install.packages(c('Rcpp', 'testthat', 'roxygen2', 'highlight', 'zoo', 'microbenchmark', 'knitr', 'rmarkdown', 'nycflights13', 'bit64'))"
+# Install apt dependencies
+RUN apt-get update -qq \
+	&& apt-get install -t unstable -y --no-install-recommends libxml2-dev
+
+# Use HDF5 Release version 1.10.1 with ASAN fixes
+RUN git clone -b hdf5_1_10_1 https://github.com/mannau/hdf5.git
+
+# Install HFD5 from source
+RUN cd hdf5 \
+    && ./configure --prefix=/usr/local \
+    && make install \
+    && cd ..
+
+# Install R dependencies
+RUN Rdevel -e "install.packages(c('Rcpp', 'testthat', 'roxygen2', 'highlight', 'zoo', 'microbenchmark', 'knitr', 'rmarkdown', 'nycflights13', 'bit64'))"
