@@ -5,7 +5,6 @@ FROM rocker/r-devel-ubsan-clang:latest
 
 MAINTAINER "Mario Annau" mario.annau@gmail.com
 
-ENV CC="clang-4.0 -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer"
 ENV LD_LIBRARY_PATH=/usr/local/lib
 ENV ASAN_OPTIONS=detect_leaks=0
 
@@ -23,4 +22,4 @@ RUN cd hdf5 \
     && cd ..
 
 # Install R dependencies
-RUN Rdevel -e "install.packages(c('Rcpp', 'testthat', 'roxygen2', 'highlight', 'zoo', 'microbenchmark', 'knitr', 'rmarkdown', 'nycflights13', 'bit64'))"
+RUN ASAN_OPTIONS=detect_leaks=0 RD --slave -e "install.packages(c('Rcpp', 'testthat', 'roxygen2', 'highlight', 'zoo', 'microbenchmark', 'nycflights13', 'bit64', 'knitr', 'rmarkdown', 'stringi'))"
