@@ -10,7 +10,7 @@ ENV ASAN_OPTIONS=detect_leaks=0
 
 # Install apt dependencies
 RUN apt-get update -qq \
-	&& apt-get install -t unstable -y --no-install-recommends libxml2-dev
+	&& apt-get install -t unstable -y --no-install-recommends libxml2-dev pandoc
 
 # Use HDF5 Release version 1.10.1 with ASAN fixes
 RUN git clone -b hdf5_1_10_1 https://github.com/mannau/hdf5.git
@@ -22,4 +22,4 @@ RUN cd hdf5 \
     && cd ..
 
 # Install R dependencies
-RUN ASAN_OPTIONS=detect_leaks=0 RD --slave -e "install.packages(c('Rcpp', 'testthat', 'roxygen2', 'highlight', 'zoo', 'microbenchmark', 'nycflights13', 'bit64', 'knitr', 'rmarkdown', 'stringi'))"
+RUN ASAN_OPTIONS=detect_leaks=0 RD --slave -e "install.packages(c('Rcpp', 'testthat', 'roxygen2', 'highlight', 'zoo', 'microbenchmark', 'nycflights13', 'bit64', 'knitr', 'rmarkdown', 'stringi', 'formatR', 'reshape2'))"
